@@ -3,6 +3,7 @@ package com.myorganisation.nexify.service;
 import com.myorganisation.nexify.dto.request.UserRequestDto;
 import com.myorganisation.nexify.dto.response.*;
 import com.myorganisation.nexify.enums.Gender;
+import com.myorganisation.nexify.exception.UserNotFoundException;
 import com.myorganisation.nexify.model.MetaData;
 import com.myorganisation.nexify.model.Profile;
 import com.myorganisation.nexify.model.User;
@@ -61,12 +62,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResponseDto getUser(Long id) {
-        User user = userRepository.findById(id).orElse(null);
-        if(user != null) {
-            return mapUserToUserResponseDto(user);
-        } else {
-            return null;
-        }
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User id: " + id + " doesn't exist"));
+        return mapUserToUserResponseDto(user);
     }
 
     @Override
