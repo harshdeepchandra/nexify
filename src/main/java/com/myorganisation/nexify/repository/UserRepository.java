@@ -8,11 +8,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     // Custom finder methods
-    User findByUsername(String username);
+    // User findByUsername(String username);
+
+    // According to the security
+    Optional<User> findByUsername(String username);
+
     List<User> findByUsernameContaining(String username);
     List<User> findByName(String name);
 
