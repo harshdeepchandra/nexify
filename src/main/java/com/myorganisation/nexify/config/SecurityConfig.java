@@ -23,7 +23,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers("/").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/users").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
 //                .formLogin(form -> form.permitAll())
