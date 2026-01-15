@@ -1,7 +1,10 @@
 package com.myorganisation.nexify.service;
 
 import com.myorganisation.nexify.dto.request.UserRequestDto;
-import com.myorganisation.nexify.dto.response.*;
+import com.myorganisation.nexify.dto.response.GenericResponseDto;
+import com.myorganisation.nexify.dto.response.MetaDataResponseDto;
+import com.myorganisation.nexify.dto.response.ProfileResponseDto;
+import com.myorganisation.nexify.dto.response.UserResponseDto;
 import com.myorganisation.nexify.enums.Gender;
 import com.myorganisation.nexify.exception.UserNotFoundException;
 import com.myorganisation.nexify.model.MetaData;
@@ -15,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -31,6 +35,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private MetaDataRepository metaDataRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponseDto registerUser(UserRequestDto userRequestDto) {
@@ -110,7 +117,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResponseDto searchUserByUsername(String username) {
-        User user = userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("Username: " + username + " doesn't exist"));
 
         if(user != null) {
             return mapUserToUserResponseDto(user);
@@ -214,8 +221,9 @@ public class UserServiceImpl implements UserService{
         user.setName(userRequestDto.getName());
         user.setEmail(userRequestDto.getEmail());
         user.setUsername(userRequestDto.getUsername());
-        user.setPassword(userRequestDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
         user.setGender(userRequestDto.getGender());
+        user.setRole(userRequestDto.getRole());
 
         return user;
     }
